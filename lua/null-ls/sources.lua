@@ -50,9 +50,19 @@ M.is_available = function(source, filetype, method)
         return false
     end
 
+    local filetype_matches = false
+    if filetype then
+        for ft in vim.gsplit(filetype, ".", true) do
+            if source.filetypes[ft] then
+                filetype_matches = true
+                break
+            end
+        end
+    end
+
     local filetype_matches = not filetype
-        or source.filetypes["_all"] and source.filetypes[filetype] == nil
-        or source.filetypes[filetype] == true
+        or source.filetypes["_all"] and not filetype_matches
+        or filetype_matches
 
     local method_matches = not method or source.methods[method] == true
     if not method_matches and methods.overrides[method] then
